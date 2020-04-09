@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="io.github.jaccastonguay.notecardapp.AddCardActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/sideOneTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/editSideOne"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="8dp"
+            android:text="TextView"
+            android:textSize="18sp"
+            tools:text="Side 1:" />
+
+        <EditText
+            android:id="@+id/editSideOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/SideTwoTextView"
+            android:layout_centerHorizontal="true"
+            android:hint="example: cozinhar"
+            android:inputType="textPersonName"
+            android:paddingBottom="8dp" />
+
+        <TextView
+            android:id="@+id/SideTwoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/editSideTwo"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="8dp"
+            android:text="Side 2:"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/editSideTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:ems="10"
+            android:hint="example: To cook"
+            android:inputType="textPersonName"
+            android:paddingBottom="8dp"
+            android:textSize="18sp" />
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_below="@id/editSideTwo"
+            android:layout_centerHorizontal="true"
+            android:columnCount="2"
+            android:rowCount="1">
+
+            <Button
+                android:id="@+id/cancelCardButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="8dp"
+                android:onClick="CancelClicked"
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/addCardButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="8dp"
+                android:onClick="AddClicked"
+                android:text="Add" />
+        </GridLayout>
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>
