@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,11 +26,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void buttonClick(View view){
+        EditText usernameEditText = findViewById(R.id.usernameEditText);
+        EditText passwordEditText = findViewById(R.id.passwordEditText);
         if(signupMode){
+            ParseUser user = new ParseUser();
+            user.setUsername(usernameEditText.getText().toString());
+            user.setPassword(passwordEditText.getText().toString());
 
+            user.signUpInBackground(new SignUpCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.i("Signup", "Success");
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        //Go to activity
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(LoginActivity.this, "An error has occurred", Toast.LENGTH_SHORT).show();
+                        Log.i("Login error", e.getMessage());
+                    }
+                }
+            });
         }else{
-            EditText usernameEditText = findViewById(R.id.usernameEditText);
-            EditText passwordEditText = findViewById(R.id.passwordEditText);
             ParseUser.logInInBackground(usernameEditText.getText().toString(), passwordEditText.getText().toString(), new LogInCallback() {
                 @Override
                 public void done(ParseUser user, ParseException e) {
@@ -61,5 +79,13 @@ public class LoginActivity extends AppCompatActivity {
             switchTextView.setText("Or, Login");
         }
         signupMode = !signupMode;
+    }
+
+    public void onBackPressed() {
+        if (ParseUser.getCurrentUser() == null) {
+
+        } else {
+            super.onBackPressed();
+        }
     }
 }
