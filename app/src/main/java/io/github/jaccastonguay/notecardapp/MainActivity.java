@@ -15,11 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.LogInCallback;
 import com.parse.ParseAnalytics;
-import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -54,21 +51,27 @@ public class MainActivity extends AppCompatActivity {
 
         //Parse connection
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
+
+        ParseUser.logOutInBackground();
         if(ParseUser.getCurrentUser() != null){
             Log.i("Current User", ParseUser.getCurrentUser().getUsername());
         }
         else{
             //No user signed in. For now I am using a test user until I create a user sign up.
-            ParseUser.logInInBackground("Test",  "Test", new LogInCallback() {
-                @Override
-                public void done(ParseUser user, ParseException e) {
-                    if (user != null) {
-                        Log.i("Login","ok!");
-                    } else {
-                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+//            ParseUser.logInInBackground("Test",  "Test", new LogInCallback() {
+//                @Override
+//                public void done(ParseUser user, ParseException e) {
+//                    if (user != null) {
+//                        Log.i("Login","ok!");
+//                    } else {
+//                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            });
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            //Go to activity
+            startActivity(intent);
+
         }
         //Test comment to make sure commit is working.
 

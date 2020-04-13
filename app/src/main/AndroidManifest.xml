@@ -2,12 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.jaccastonguay.notecardapp">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
 
     <application
         android:name=".StarterApplication"
@@ -27,7 +25,8 @@
         <activity android:name=".AddChapterActivity" />
         <activity android:name=".CardListActivity" />
         <activity android:name=".AddCardActivity" />
-        <activity android:name=".CardActivity"></activity>
+        <activity android:name=".CardActivity" />
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
