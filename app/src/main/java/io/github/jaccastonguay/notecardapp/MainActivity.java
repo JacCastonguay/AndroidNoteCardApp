@@ -41,9 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
         //Local DB
         sqLiteDatabase = this.openOrCreateDatabase("NoteCards", MODE_PRIVATE, null);
+//        try {
+//            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Card");
+//            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS Chapters");
+//            Log.i("Tables dropped", "success");
+//        }catch (Exception exception){
+//            Log.i("Didn't work", exception.getMessage());
+//        }
 
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Chapters (chapter VARCHAR PRIMARY KEY, description VARCHAR)");
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Card (chapter VARCHAR, sideOne VARCHAR, sideTwo VARCHAR, timesRightCounter Int(2), FOREIGN KEY (chapter) REFERENCES Chapters (chapter))");
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Chapters (chapter VARCHAR, description VARCHAR, user VARCHAR, parseObjectId VARCHAR)");
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS Card (chapter VARCHAR, sideOne VARCHAR, sideTwo VARCHAR, timesRightCounter Int(2), user VARCHAR, parseObjectId VARCHAR, FOREIGN KEY (chapter) REFERENCES Chapters (chapter))");
         //sqLiteDatabase.execSQL("INSERT INTO Chapters (chapter, description) VALUES ('Chapter 1', 'just the basics')");
         //sqLiteDatabase.execSQL("INSERT INTO Card (chapter, sideOne, sideTwo, timesRightCounter) VALUES ('Chapter 1', 'aula', 'clase', 0)");
 
@@ -52,31 +59,14 @@ public class MainActivity extends AppCompatActivity {
         //Parse connection
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
 
-        ParseUser.logOutInBackground();
         if(ParseUser.getCurrentUser() != null){
             Log.i("Current User", ParseUser.getCurrentUser().getUsername());
         }
         else{
-            //No user signed in. For now I am using a test user until I create a user sign up.
-//            ParseUser.logInInBackground("Test",  "Test", new LogInCallback() {
-//                @Override
-//                public void done(ParseUser user, ParseException e) {
-//                    if (user != null) {
-//                        Log.i("Login","ok!");
-//                    } else {
-//                        Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//            });
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            //Go to activity
             startActivity(intent);
 
         }
-        //Test comment to make sure commit is working.
-
-
-
 
         UpdateChapterListView();
 

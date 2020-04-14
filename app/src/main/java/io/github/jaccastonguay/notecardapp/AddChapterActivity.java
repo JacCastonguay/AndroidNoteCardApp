@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 public class AddChapterActivity extends AppCompatActivity {
 
     @Override
@@ -30,11 +32,13 @@ public class AddChapterActivity extends AppCompatActivity {
 
         if(!chapter.equals("")){
             //SQL injection
-            String sql  = "INSERT INTO Chapters (chapter, description) VALUES (?, ?)";
+            String sql  = "INSERT INTO Chapters (chapter, description, user, parseObjectId) VALUES (?, ?, ?, ?)";
             SQLiteStatement statement = MainActivity.sqLiteDatabase.compileStatement(sql);
             //1 based counting system.
             statement.bindString(1, chapter);
             statement.bindString(2, desc);
+            statement.bindString(3, ParseUser.getCurrentUser().getUsername());
+            statement.bindString(4, "test");
 
             statement.execute();
 

@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 public class AddCardActivity extends AppCompatActivity {
     String chapter;
 
@@ -32,12 +34,14 @@ public class AddCardActivity extends AppCompatActivity {
 
         if(!sideOne.equals("") && !sideTwo.equals("")){
             //SQL injection
-            String sql  = "INSERT INTO Card (chapter, sideOne, sideTwo, timesRightCounter) VALUES (?, ?, ?, 0)";
+            String sql  = "INSERT INTO Card (chapter, sideOne, sideTwo, timesRightCounter, user, parseObjectId) VALUES (?, ?, ?, 0, ?, ?)";
             SQLiteStatement statement = MainActivity.sqLiteDatabase.compileStatement(sql);
             //1 based counting system.
             statement.bindString(1, chapter);
             statement.bindString(2, sideOne);
             statement.bindString(3, sideTwo);
+            statement.bindString(4, ParseUser.getCurrentUser().getUsername());
+            statement.bindString(5, "test");
 
             statement.execute();
 
