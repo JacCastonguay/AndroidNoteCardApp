@@ -15,8 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.LogOutCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -103,6 +106,19 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), AddChapterActivity.class);
                 startActivityForResult(intent, REQUEST_CODE);
                 return true;
+            case R.id.logout:
+                ParseUser.logOutInBackground(new LogOutCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e == null){
+                            Intent intent1 = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivityForResult(intent1, REQUEST_CODE);
+                        }else{
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                return true;
             default:
                 return false;
         }
@@ -146,7 +162,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setAdapter(chaptersAdapter);
     }
 
+    public void onBackPressed() {
+        //Disallowing backbutton for logged in users so multiple logins are not created
+        if (ParseUser.getCurrentUser() != null) {
 
+        } else {
+            super.onBackPressed();
+        }
+    }
 
 //    public void SwitchSide(View view){
 //        TextView textView = (TextView)view;
