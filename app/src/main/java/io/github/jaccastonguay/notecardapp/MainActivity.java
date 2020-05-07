@@ -1,9 +1,12 @@
 package io.github.jaccastonguay.notecardapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,12 +20,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
+import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public static SQLiteDatabase sqLiteDatabase;
@@ -85,6 +93,104 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final int ind = i;
+                //Ask to delete
+                new AlertDialog.Builder(MainActivity.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Are you sure you want to delete this chapter?")
+                        .setMessage("card: " + chapters.get(i))
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                DeleteChapter(ind);
+
+                            }
+                        })
+                        .setNegativeButton("No", null) /*null will just let the pop up close*/
+                        .show();
+
+
+                return true;
+            }
+        });
+
+    }
+
+    private void DeleteChapter(final int ind){
+        final String chapter = chapters.get(ind);
+
+        //Parse first
+        //Delete cards with said chapter
+        ParseQuery<ParseObject> cardQuery = new ParseQuery<ParseObject>("Card");
+        cardQuery.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        cardQuery.whereEqualTo("chapter", chapter);
+        cardQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(e == null){
+                    Log.i("Query success", "cards from chapter");
+                    for(ParseObject obj : objects){
+                        obj.deleteInBackground(new DeleteCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if(e == null){
+                                    Log.i("delete success", "cards from chapter");
+                                }else{
+                                    Log.i("failed to delete", e.getMessage());
+                                }
+                            }
+                        });
+                    }
+                }else{
+                    Log.i("failed to query", e.getMessage());
+                }
+            }
+        });
+
+
+        //Delete cards locally
+        String sql  = "Delete From Card where user = '" + ParseUser.getCurrentUser().getUsername() + "' AND chapter = '" + chapter + "'";
+        SQLiteStatement statement = MainActivity.sqLiteDatabase.compileStatement(sql);
+        statement.execute();
+
+        //Delete Chapter from parse
+        ParseQuery<ParseObject> chapterQuery = new ParseQuery<ParseObject>("Chapter");
+        chapterQuery.whereEqualTo("userID", ParseUser.getCurrentUser().getUsername());
+        chapterQuery.whereEqualTo("chapter", chapter);
+        chapterQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(e == null){
+                    Log.i("Query success", "chapter");
+                    for(ParseObject obj : objects){
+                        obj.deleteInBackground(new DeleteCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if(e == null){
+                                    Log.i("delete success", "chapter");
+                                }else{
+                                    Log.i("failed to delete", e.getMessage());
+                                }
+                            }
+                        });
+                    }
+                }else{
+                    Log.i("failed to query", e.getMessage());
+                }
+            }
+        });
+
+        //Delete chapter locally
+        String chapterSql  = "Delete From Chapters where user = '" + ParseUser.getCurrentUser().getUsername() + "' AND chapter = '" + chapter + "'";
+        SQLiteStatement chapterStatement = MainActivity.sqLiteDatabase.compileStatement(chapterSql);
+        chapterStatement.execute();
+
+        chapters.remove(ind);
+        descriptions.remove(ind);
+        chaptersAdapter.notifyDataSetChanged();
 
     }
 
@@ -133,6 +239,8 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode == Activity.RESULT_OK){
                     String chapter = data.getStringExtra("NewChapter");
                     chapters.add(chapter);
+                    String desc = data.getStringExtra("NewDesc");
+                    descriptions.add(desc);
                     chaptersAdapter.notifyDataSetChanged();
                 }
                 break;

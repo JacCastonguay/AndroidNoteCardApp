@@ -73,6 +73,7 @@ public class AddChapterActivity extends AppCompatActivity {
             //Need to add to listView on way back
             Intent intent = new Intent();
             intent.putExtra("NewChapter", chapter);
+            intent.putExtra("NewDesc", desc);
             setResult(Activity.RESULT_OK, intent);
 
             finish();
