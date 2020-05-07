@@ -62,7 +62,11 @@ public class CardActivity extends AppCompatActivity {
 
     }
 
+
+
     public void SwipeNext(boolean correct){
+
+
         index++;
         if(index >= wordList.size()){
             index = 0;

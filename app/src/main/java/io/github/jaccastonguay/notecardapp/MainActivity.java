@@ -116,6 +116,74 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        if(ParseUser.getCurrentUser() != null)
+            CheckForChaptersFromParse();
+
+    }
+    private void CheckForChaptersFromParse(){
+        String chapterLocalQuery = "SELECT * FROM Chapters where user = '" + ParseUser.getCurrentUser().getUsername() +"'";
+
+        final Cursor c = sqLiteDatabase.rawQuery(chapterLocalQuery, null);
+        final int localChapterCount = c.getCount();
+        //Grab ObjectIDs in case they are needed
+        ArrayList<String> localIds = new ArrayList<>();
+        c.moveToFirst();
+        int objectIdCol = c.getColumnIndex("parseObjectId");
+        while(!c.isAfterLast()){
+            localIds.add(c.getString(objectIdCol));
+        }
+        final ArrayList<String> finalLocalIds = localIds;
+        Log.i("Local chapter count", Integer.toString(localChapterCount));
+
+        ParseQuery<ParseObject> chapterParseQuery = new ParseQuery<ParseObject>("Chapter");
+        chapterParseQuery.whereEqualTo("userID", ParseUser.getCurrentUser().getUsername());
+        chapterParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if(e == null){
+                    Log.i("Parse chapter count", Integer.toString(objects.size()));
+                    if(localChapterCount < objects.size()){
+                        DownloadChapters(objects, finalLocalIds);
+                    }
+                }
+                else{
+                    Log.i("Parse Query err", e.getMessage());
+                }
+            }
+        });
+
+    }
+    private void DownloadChapters(List<ParseObject> objects, final ArrayList<String> finalLocalIds){
+        ArrayList<String> sqlStatements = new ArrayList<>();
+        for (ParseObject newChapter : objects){
+            if(!finalLocalIds.contains(newChapter.getObjectId())){
+                Log.i("Does NOT have", newChapter.getObjectId());
+                String sql  = "INSERT INTO Chapters (chapter, description, user, parseObjectId) VALUES ('"+ newChapter.getString("chapter") +"', '"
+                        + "description" + "', '" + ParseUser.getCurrentUser().getUsername() + "', '" + newChapter.getObjectId() + "');";
+                //Something about executing sql statements in a loop fries the entire app upon reload, requiring an new virtual device be set up.
+                //SQLiteStatement statement = sqLiteDatabase.compileStatement(sql);
+                //1 based counting system.
+                //statement.bindString(1, newChapter.getString("chapter"));
+                //statement.bindString(2, newChapter.getString("description"));
+                //statement.bindString(3, ParseUser.getCurrentUser().getUsername());
+                //statement.bindString(4, newChapter.getObjectId());
+
+                //statement.execute();
+
+                //chapters.add(newChapter.getString("chapter"));
+                //descriptions.add(newChapter.getString("description"));
+                //chaptersAdapter.notifyDataSetChanged();
+
+                sqlStatements.add(sql);
+            }else{
+                Log.i("Does have", newChapter.getObjectId());
+            }
+        }
+        for (String sql: sqlStatements) {
+            Log.i("Statement", sql);
+            //Still breaking phone
+            //sqLiteDatabase.execSQL(sql);
+        }
 
     }
 
@@ -138,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                             public void done(ParseException e) {
                                 if(e == null){
                                     Log.i("delete success", "cards from chapter");
+
                                 }else{
                                     Log.i("failed to delete", e.getMessage());
                                 }
