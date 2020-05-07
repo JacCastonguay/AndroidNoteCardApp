@@ -51,6 +51,15 @@ public class CardActivity extends AppCompatActivity {
             }
 
         });
+
+        TextView swipeRightHint = findViewById(R.id.swipeRightHintTextView);
+        TextView swipeLeftHint = findViewById(R.id.swipeLeftHintTextView);
+        TextView swipeUpHint = findViewById(R.id.swipeUptextView);
+
+        swipeRightHint.animate().alpha(0).setDuration(400).setStartDelay(8000);
+        swipeLeftHint.animate().alpha(0).setDuration(400).setStartDelay(8000);
+        swipeUpHint.animate().alpha(0).setDuration(400).setStartDelay(8000);
+
     }
 
     public void SwipeNext(boolean correct){

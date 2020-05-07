@@ -7,8 +7,13 @@
     tools:context="io.github.jaccastonguay.notecardapp.CardActivity">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/cardTextView"
@@ -20,6 +25,44 @@
             android:gravity="center"
             android:text="TextView"
             android:textAlignment="center"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/swipeUptextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/cardTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="28dp"
+            android:text="Swipe up or down to check your answer!"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color" />
+
+        <TextView
+            android:id="@+id/swipeRightHintTextView"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="8dp"
+            android:layout_toEndOf="@+id/cardTextView"
+            android:layout_toRightOf="@+id/cardTextView"
+            android:text="swipe right to mark correct!"
+            android:textAlignment="center"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color" />
+
+        <TextView
+            android:id="@+id/swipeLeftHintTextView"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/cardTextView"
+            android:layout_toStartOf="@+id/cardTextView"
+            android:text="swipe left to mark incorrect!"
+            android:textAlignment="center"
+            android:textColor="@color/cast_libraries_material_featurehighlight_outer_highlight_default_color" />
+
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
