@@ -68,10 +68,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            //startActivity(intent);
             startActivityForResult(intent, REQUEST_CODE_USER_LOGIN);
-
-
         }
 
         UpdateChapterListView();
@@ -80,10 +77,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView tv = (TextView)view;
-                String desc = descriptions.get(chapters.indexOf(tv.getText().toString()));
+                //String desc = descriptions.get(chapters.indexOf(tv.getText().toString()));
                 Intent intent = new Intent(getApplicationContext(), CardListActivity.class);
                 intent.putExtra("Chapter", tv.getText().toString());
-                intent.putExtra("Description", desc);
+                //intent.putExtra("Description", desc);
                 startActivity(intent);
             }
         });
@@ -138,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                     chapters.add(chapter);
                     chaptersAdapter.notifyDataSetChanged();
                 }
+                break;
             case REQUEST_CODE_USER_LOGIN:
                 UpdateChapterListView();
         }
@@ -155,7 +153,8 @@ public class MainActivity extends AppCompatActivity {
         //We grab info in our loop based on the column's index.
         int chapterIndex = c.getColumnIndex("chapter");
         int descriptionIndex = c.getColumnIndex("description");
-
+        chapters.clear();
+        descriptions.clear();
         //Set cursor to starting position
         c.moveToFirst();
         //Go through results

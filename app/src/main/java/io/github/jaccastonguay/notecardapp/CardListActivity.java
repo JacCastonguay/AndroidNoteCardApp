@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 
 public class CardListActivity extends AppCompatActivity {
@@ -34,13 +36,13 @@ public class CardListActivity extends AppCompatActivity {
         //Get stuff that was passed.
         Intent intent = getIntent();
         chapter = getStringSafe(intent.getStringExtra("Chapter"));
-        String desc = getStringSafe(intent.getStringExtra("Description"));
+        //String desc = getStringSafe(intent.getStringExtra("Description"));
 
         Log.i("chapter", chapter);
-        Log.i("Desc", desc);
+        //Log.i("Desc", desc);
 
         //Query for chapter cards.
-        Cursor c  = MainActivity.sqLiteDatabase.rawQuery(String.format("SELECT * FROM Card WHERE chapter = '%s'",chapter), null);
+        Cursor c  = MainActivity.sqLiteDatabase.rawQuery(String.format("SELECT * FROM Card WHERE chapter = '%s' AND user = '%s'",chapter, ParseUser.getCurrentUser().getUsername()), null);
         int cardsSide1Index = c.getColumnIndex("sideOne");
         int cardsSide2Index = c.getColumnIndex("sideTwo");
 
