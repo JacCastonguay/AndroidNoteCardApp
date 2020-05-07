@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
 
     public static final int REQUEST_CODE = 1014;
+    public static final int REQUEST_CODE_USER_LOGIN = 1016;
 
     //ArrayList<Word> wordList;
     @Override
@@ -67,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
+            //startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE_USER_LOGIN);
+
 
         }
 
@@ -135,11 +138,19 @@ public class MainActivity extends AppCompatActivity {
                     chapters.add(chapter);
                     chaptersAdapter.notifyDataSetChanged();
                 }
+            case REQUEST_CODE_USER_LOGIN:
+                UpdateChapterListView();
         }
     }
 
     public void UpdateChapterListView(){
-        Cursor c = sqLiteDatabase.rawQuery("SELECT * FROM Chapters", null);
+
+        String query = "SELECT * FROM Chapters";
+        if(ParseUser.getCurrentUser() != null){
+            query = "SELECT * FROM Chapters where user = '" + ParseUser.getCurrentUser().getUsername() +"'";
+        }
+
+        Cursor c = sqLiteDatabase.rawQuery(query, null);
 
         //We grab info in our loop based on the column's index.
         int chapterIndex = c.getColumnIndex("chapter");
