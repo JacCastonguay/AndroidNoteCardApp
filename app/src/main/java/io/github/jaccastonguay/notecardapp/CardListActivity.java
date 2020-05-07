@@ -17,6 +17,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.parse.DeleteCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -84,8 +89,44 @@ public class CardListActivity extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                //Code for yes option
-                                String sideOne = cardsSide1.get(ind);
+                                DeleteCard(ind);
+
+                            }
+                        })
+                        .setNegativeButton("No", null) /*null will just let the pop up close*/
+                        .show();
+
+
+                return true;
+            }
+        });
+
+    }
+
+    private void DeleteCard(final int ind) {
+        final String sideOne = cardsSide1.get(ind);
+
+        //Parse first
+        //Get objectId to delete
+        Cursor c  = MainActivity.sqLiteDatabase.rawQuery(String.format("SELECT * FROM Card WHERE chapter = '%s' AND user = '%s' AND sideOne = '%s'",chapter, ParseUser.getCurrentUser().getUsername(), sideOne), null);
+
+        //We grab info in our loop based on the column's index.
+        int parseObjectIdcolumn = c.getColumnIndex("parseObjectId");
+        c.moveToFirst();
+        String objectId = c.getString(parseObjectIdcolumn);
+
+        //Now on to parse query
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Card");
+        parseQuery.whereEqualTo("objectId", objectId);
+        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if(e == null){
+                    object.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null){
+
                                 //Removing from view
                                 cardsSide1.remove(ind);
                                 cardsSide2.remove(ind);
@@ -97,15 +138,18 @@ public class CardListActivity extends AppCompatActivity {
                                 //statement.bindString(2, chapter);
                                 statement.execute();
 
+                            }else{
+                                Log.i("Delete Error", e.getMessage());
                             }
-                        })
-                        .setNegativeButton("No", null) /*null will just let the pop up close*/
-                        .show();
-
-
-                return true;
+                        }
+                    });
+                }else{
+                    Log.i("Retrieve Error", e.getMessage());
+                }
             }
         });
+
+
 
     }
 
