@@ -7,6 +7,7 @@
     tools:context="io.github.jaccastonguay.notecardapp.AddCardActivity">
 
     <RelativeLayout
+        android:id="@+id/addCardRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

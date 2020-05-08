@@ -85,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView tv = (TextView)view;
-                //String desc = descriptions.get(chapters.indexOf(tv.getText().toString()));
+                String desc = descriptions.get(chapters.indexOf(tv.getText().toString()));
                 Intent intent = new Intent(getApplicationContext(), CardListActivity.class);
                 intent.putExtra("Chapter", tv.getText().toString());
-                //intent.putExtra("Description", desc);
+                intent.putExtra("Description", desc);
                 startActivity(intent);
             }
         });
@@ -131,10 +131,12 @@ public class MainActivity extends AppCompatActivity {
         int objectIdCol = c.getColumnIndex("parseObjectId");
         while(!c.isAfterLast()){
             localIds.add(c.getString(objectIdCol));
+            c.moveToNext();
         }
+        c.close();
         final ArrayList<String> finalLocalIds = localIds;
         Log.i("Local chapter count", Integer.toString(localChapterCount));
-
+        //Memory error from too many objects.
         ParseQuery<ParseObject> chapterParseQuery = new ParseQuery<ParseObject>("Chapter");
         chapterParseQuery.whereEqualTo("userID", ParseUser.getCurrentUser().getUsername());
         chapterParseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -143,7 +145,8 @@ public class MainActivity extends AppCompatActivity {
                 if(e == null){
                     Log.i("Parse chapter count", Integer.toString(objects.size()));
                     if(localChapterCount < objects.size()){
-                        DownloadChapters(objects, finalLocalIds);
+                        DownloadFromParse(objects, finalLocalIds);
+
                     }
                 }
                 else{
@@ -153,38 +156,60 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    private void DownloadChapters(List<ParseObject> objects, final ArrayList<String> finalLocalIds){
-        ArrayList<String> sqlStatements = new ArrayList<>();
+    private void DownloadFromParse(List<ParseObject> objects, final ArrayList<String> finalLocalIds){
+        ArrayList<String>chaptersToAddCards = new ArrayList<>();
+        //Download Chapters
         for (ParseObject newChapter : objects){
             if(!finalLocalIds.contains(newChapter.getObjectId())){
                 Log.i("Does NOT have", newChapter.getObjectId());
-                String sql  = "INSERT INTO Chapters (chapter, description, user, parseObjectId) VALUES ('"+ newChapter.getString("chapter") +"', '"
-                        + "description" + "', '" + ParseUser.getCurrentUser().getUsername() + "', '" + newChapter.getObjectId() + "');";
-                //Something about executing sql statements in a loop fries the entire app upon reload, requiring an new virtual device be set up.
-                //SQLiteStatement statement = sqLiteDatabase.compileStatement(sql);
+                String sql  = "INSERT INTO Chapters (chapter, description, user, parseObjectId) VALUES (?, ?, ?, ?)";
+                SQLiteStatement statement = sqLiteDatabase.compileStatement(sql);
                 //1 based counting system.
-                //statement.bindString(1, newChapter.getString("chapter"));
-                //statement.bindString(2, newChapter.getString("description"));
-                //statement.bindString(3, ParseUser.getCurrentUser().getUsername());
-                //statement.bindString(4, newChapter.getObjectId());
+                statement.bindString(1, newChapter.getString("chapter"));
+                statement.bindString(2, newChapter.getString("description"));
+                statement.bindString(3, ParseUser.getCurrentUser().getUsername());
+                statement.bindString(4, newChapter.getObjectId());
 
-                //statement.execute();
+                statement.execute();
 
-                //chapters.add(newChapter.getString("chapter"));
-                //descriptions.add(newChapter.getString("description"));
-                //chaptersAdapter.notifyDataSetChanged();
+                chapters.add(newChapter.getString("chapter"));
+                descriptions.add(newChapter.getString("description"));
+                chaptersAdapter.notifyDataSetChanged();
+                chaptersToAddCards.add(newChapter.getString("chapter"));
 
-                sqlStatements.add(sql);
             }else{
                 Log.i("Does have", newChapter.getObjectId());
             }
         }
-        for (String sql: sqlStatements) {
-            Log.i("Statement", sql);
-            //Still breaking phone
-            //sqLiteDatabase.execSQL(sql);
+        //Now for cards
+        for(String chapter : chaptersToAddCards){
+            ParseQuery<ParseObject> cardQuery = new ParseQuery<ParseObject>("Card");
+            cardQuery.whereEqualTo("chapter", chapter);
+            cardQuery.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+            cardQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> cardForSpecificChapters, ParseException e) {
+                    for(ParseObject specificCard : cardForSpecificChapters){
+                        Log.i("Adding Card", specificCard.getObjectId());
+                        String sql  = "INSERT INTO Card (chapter, sideOne, sideTwo, timesRightCounter, user, parseObjectId) VALUES (?, ?, ?, 0, ?, ?)";
+                        SQLiteStatement statement = MainActivity.sqLiteDatabase.compileStatement(sql);
+                        //1 based counting system.
+                        statement.bindString(1, String.valueOf(specificCard.get("chapter")));
+                        statement.bindString(2, specificCard.getString("sideOne"));
+                        statement.bindString(3, specificCard.getString("sideTwo"));
+                        statement.bindString(4, ParseUser.getCurrentUser().getUsername());
+                        statement.bindString(5, specificCard.getObjectId());
+
+                        statement.execute();
+                    }
+                }
+            });
         }
 
+    }
+
+    private void DownloadCards(){
+        //
     }
 
     private void DeleteChapter(final int ind){

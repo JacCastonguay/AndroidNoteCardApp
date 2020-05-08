@@ -6,7 +6,9 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,6 +24,15 @@ public class AddChapterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_chapter);
         setTitle("Add a new chapter");
+
+        findViewById(R.id.relativeLayout).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                return true;
+            }
+        });
     }
 
     public void CancelClicked(View view){
@@ -81,4 +92,5 @@ public class AddChapterActivity extends AppCompatActivity {
             Toast.makeText(this, "Chapter cannot be left blank", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

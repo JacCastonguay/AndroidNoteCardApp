@@ -6,7 +6,9 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,6 +26,15 @@ public class AddCardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_card);
         Intent intent = getIntent();
         chapter = intent.getStringExtra("chapter");
+
+        findViewById(R.id.addCardRelativeLayout).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                return true;
+            }
+        });
     }
 
     public void CancelClicked(View view){

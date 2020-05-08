@@ -41,11 +41,11 @@ public class CardListActivity extends AppCompatActivity {
         //Get stuff that was passed.
         Intent intent = getIntent();
         chapter = getStringSafe(intent.getStringExtra("Chapter"));
-        //String desc = getStringSafe(intent.getStringExtra("Description"));
+        String desc = getStringSafe(intent.getStringExtra("Description"));
 
         Log.i("chapter", chapter);
-        //Log.i("Desc", desc);
-
+        Log.i("Desc", desc);
+        setTitle(chapter);
         //Query for chapter cards.
         Cursor c  = MainActivity.sqLiteDatabase.rawQuery(String.format("SELECT * FROM Card WHERE chapter = '%s' AND user = '%s'",chapter, ParseUser.getCurrentUser().getUsername()), null);
         int cardsSide1Index = c.getColumnIndex("sideOne");
